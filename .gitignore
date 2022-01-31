@@ -1,0 +1,13 @@
+env/
+build/
+.direnv/
+__pycache__/
+.DS_Store
+pip.conf
+cred.conf
+htmlcov/
+.pytest_cache/
+.coverage
+.vscode/
+alembic.ini
+istio*/
