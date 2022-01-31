@@ -1,0 +1,193 @@
+openapi: "3.0.3"
+info:
+  description: OpenAPI goes with People server code
+  version: "1.0.0"
+  title: People Web App
+
+servers:
+- url: "/private/v1"
+  
+
+# Paths supported by the server application
+paths:
+  /people:
+    get:
+      operationId: read_all
+      tags:
+        - People
+      summary: The people data structure supported by the server application
+      x-openapi-router-controller: api.people
+      description: Read the list of people
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/people_get_response'
+              example: {
+                "People": [
+                  {
+                    "fname": "Clinton",
+                    "lname": "Ewertz",
+                    "timestamp": "1/30/2022"
+                  },
+                  {
+                    "fname": "Rachael",
+                    "lname": "Ewertz",
+                    "timestamp": "1/30/2022"
+                  }
+                  
+                ]
+              }  
+          description: "Success"
+    post:
+      operationId: create
+      tags:
+        - People
+      summary: Create a person and add it to the people list
+      x-openapi-router-controller: api.people
+      description: Create a new person in the people list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/people_create_request'
+      responses:
+        201:
+          description: Sucess
+        500:
+          description: Async job cannot be performed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /people/{lname}:
+    get:
+      tags:
+        - People
+      summary: Read one person from the people list
+      x-openapi-router-controller: api.people
+      operationId: read_one
+      description: Read one person from the people list
+      parameters:
+        - in: path
+          name: lname
+          description: Last name of the person to get from the list
+          schema:
+            type: string
+          required: True
+          example: David
+      responses:
+        200:
+          description: Successfully read person from people list operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  fname:
+                    type: string
+                  lname:
+                    type: string
+                  timestamp:
+                    type: string
+    put:
+      tags:
+        - People
+      summary: Update a person in the people list
+      x-openapi-router-controller: api.people
+      operationId: update
+      description: Update a person in the people list
+      parameters:
+        - in: path
+          name: lname
+          description: Last name of the person to update in the list
+          schema:
+            type: string
+          required: True
+      requestBody:
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/people_create_request'
+      responses:
+        200:
+          description: Successfully updated person in people list
+    delete:
+      tags:
+        - People
+      summary: Delete a person from the people list
+      x-openapi-router-controller: api.people
+      operationId: delete
+      description: Delete a person
+      parameters:
+        - in: path
+          name: lname
+          description: Last name of the person to delete from the list
+          schema:
+            type: string
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a person from people list
+                
+#######################  
+#components           #
+#######################
+components:
+
+#######################  
+#schemas           #
+#######################
+  schemas:
+  
+    people_get_response:
+      type: object
+      description: "200 response to fetch names"
+      properties:
+        fname:
+          type: "string"
+        lname:
+          type: "string"
+        timestamp:
+          type: "string"
+          
+    people_create_request:
+      type: object
+      x-body-name: person
+      description: "Person to create"
+      required:
+        - fname
+        - lname
+      properties:
+        fname:
+          type: "string"
+          description: Person first name
+        lname:
+          type: "string"
+          description: Person last name
+    
+    error:
+      type: object
+      description: Returns a general error object
+      properties:
+        message:
+          type: string
+          description: A message describing the error encountered
+        trace:
+          type: string
+          description: A uuid used for debugging purposes
+        code:
+          type: string
+          description: An error code specific to the error encountered
+        more_info:
+          type: string
+          description: A URL link where more information can be found on this error
+      example:
+        message: "The service encountered an unexpected error"
+        trace: "uuid"
+        code: general_error
+        more_info: "/link/to/error/doc"
+
+          
+    
